@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Targetime • Project Document – Miss Badria Mattar (Website + LMS + Paywalls + Stripe)</title>
+  <style>
+    :root{
+      --ink:#0b0f14;
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.72);
+      --muted-2:rgba(255,255,255,.55);
+      --brandA:#00FF85; /* neon green */
+      --brandB:#00FFC5; /* aqua green */
+      --card-bg:rgba(255,255,255,.06);
+      --card-border:rgba(255,255,255,.10);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background: var(--ink); color: var(--text); font:400 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; overflow-x:hidden;}
+    .bg{position:fixed; inset:0; z-index:-2; opacity:.95; background-image:radial-gradient(60rem 60rem at 15% 18%, color-mix(in srgb, var(--brandA) 18%, transparent) 0%, transparent 60%),radial-gradient(70rem 70rem at 85% 28%, color-mix(in srgb, var(--brandB) 16%, transparent) 0%, transparent 60%),radial-gradient(80rem 80rem at 50% 88%, color-mix(in srgb, var(--brandA) 12%, transparent) 0%, transparent 65%); background-repeat:no-repeat; background-color: var(--ink);} 
+    .vignette{position:fixed; inset:0; z-index:-1; background: radial-gradient(120rem 60rem at 50% 120%, rgba(0,0,0,.65), transparent 60%);} 
+    .container{max-width:1100px; margin:0 auto; padding:40px 20px}
+    @media (min-width:640px){ .container{padding:56px 24px} }
+    @media (min-width:900px){ .container{padding:64px 28px} }
+
+    .header{display:flex; align-items:center; gap:14px; margin-bottom:28px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-size:13px;}
+    .logo{width:48px; height:48px; object-fit:contain; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--brandB) 35%, transparent));}
+
+    .card{position:relative; overflow:hidden; background:var(--card-bg); border:1px solid var(--card-border); border-radius:18px; padding:22px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);} 
+    @media (min-width:768px){ .card{padding:28px} }
+    .soft-highlight{position:absolute; inset:0; pointer-events:none; border-radius:18px; background:radial-gradient(1000px 220px at 10% 0%, rgba(255,255,255,.08), transparent 65%);} 
+
+    .h1{margin:0 0 8px; font-weight:600; font-size:clamp(22px,2.4vw+12px,32px); line-height:1.25}
+    .brand-gradient{background:linear-gradient(90deg,var(--brandA),var(--brandB),var(--brandA)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .muted{color:var(--muted)}
+    .muted-2{color:var(--muted-2)}
+    .section{margin-top:26px}
+    @media (min-width:768px){ .section{margin-top:32px} }
+    h2{margin:0; font-weight:600; font-size:clamp(18px,1.2vw+14px,22px)}
+    .t-emerald{color:color-mix(in srgb,var(--brandA) 85%,white 15%)}
+    .t-cyan{color:color-mix(in srgb,var(--brandB) 85%,white 15%)}
+    .t-blue{color:#a8d4ff}
+    .t-violet{color:#ccb3ff}
+    .t-amber{color:#ffe6b4}
+    .pill{display:inline-block; padding:.22rem .6rem; border-radius:999px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color: var(--muted); border:1px solid var(--card-border); background: rgba(255,255,255,.04)}
+    .list{margin:12px 0 0; padding-left:20px}
+    .list li{margin:6px 0}
+
+    .grid2{display:grid; gap:12px; margin-top:14px}
+    @media (min-width:760px){ .grid2{grid-template-columns:1fr 1fr} }
+
+    .grid-days{display:grid; gap:12px; margin-top:16px}
+    @media (min-width:740px){ .grid-days{grid-template-columns:1fr 1fr} }
+    @media (min-width:1040px){ .grid-days{grid-template-columns:1fr 1fr 1fr} }
+
+    .day{position:relative; overflow:hidden; background: var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:16px 18px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px)}
+    .day .bg-soft{position:absolute; inset:0; pointer-events:none; border-radius:14px; background: radial-gradient(60rem 20rem at 10% 0%, color-mix(in srgb, var(--brandB) 14%, transparent), transparent 60%)}
+    .day .kicker{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-2); margin-bottom:4px}
+    .day h3{margin:0 0 6px; font-size:16px; font-weight:600}
+    .day ul{margin:0; padding-left:18px; color:var(--muted); font-size:14px}
+
+    .footer{border-top:1px solid var(--card-border); margin-top:32px; padding-top:18px; text-align:center; font-size:12px; color:rgba(255,255,255,.5)}
+
+    /* Light reveal */
+    .reveal{opacity:0; transform: translateY(12px); transition: opacity .45s ease, transform .45s ease}
+    .reveal.show{opacity:1; transform:none}
+    @media (prefers-reduced-motion: reduce){ .reveal{opacity:1; transform:none} }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="vignette"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <div class="header reveal">
+      <img class="logo" src="https://framerusercontent.com/images/0Wv5hQVMLzh3f9CWZ4UtLjPjZU.png?scale-down-to=512" alt="Targetime logo" />
+      <div>Targetime • AI Content Automation</div>
+    </div>
+
+    <!-- Welcome -->
+    <section class="card reveal" aria-labelledby="welcome-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h1 class="h1" id="welcome-title">Project Document — <span class="brand-gradient">Miss Badria Mattar</span></h1>
+        <p class="muted">Scope: Framer website frontend + WordPress LMS + secure paywalls + Stripe payments. Designed for smooth student onboarding, crisp UX, and reliable subscription/checkout flows.</p>
+        <p class="muted-2" style="margin:.3rem 0 0;">Timeline: <strong style="color:#fff">4 weeks (28 days)</strong></p>
+      </div>
+    </section>
+
+    <!-- Overview -->
+    <section class="card section reveal" aria-labelledby="overview-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="overview-title" class="t-emerald">01 · Project Overview</h2>
+        <p class="muted" style="margin-top:8px">We will build a conversion‑focused website in <strong style="color:#fff">Framer</strong> and a scalable <strong style="color:#fff">WordPress LMS</strong> (e.g., LearnDash or TutorLMS). Access to premium lessons is controlled by <strong style="color:#fff">Stripe</strong> (subscriptions or one‑time), with automatic paywalls and student enrollment sync. UX prioritizes clarity, speed, and mobile usability.</p>
+      </div>
+    </section>
+
+    <!-- Deliverables -->
+    <section class="card section reveal" aria-labelledby="deliverables-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="deliverables-title" class="t-cyan">02 · Deliverables</h2>
+        <div class="grid2">
+          <div>
+            <h3 class="pill" style="margin:6px 0 10px">Framer Website</h3>
+            <ul class="list muted">
+              <li>Responsive pages: Home, About, Courses, Pricing, Testimonials, Contact.</li>
+              <li>Hero with value prop + clear enrollment path.</li>
+              <li>Trust elements: logos, testimonials, FAQs, compliance notes.</li>
+              <li>SEO basics: meta titles/descriptions, open graph.</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="pill" style="margin:6px 0 10px">WordPress LMS</h3>
+            <ul class="list muted">
+              <li>Courses → modules → lessons → quizzes/certificates.</li>
+              <li>Student dashboard & progress tracking.</li>
+              <li>Content protection by membership/plan.</li>
+              <li>Email notifications (enrollment, password reset, receipts).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:12px">
+          <div>
+            <h3 class="pill" style="margin:6px 0 10px">Stripe + Paywalls</h3>
+            <ul class="list muted">
+              <li>Stripe account setup & product/price creation.</li>
+              <li>Checkout (subscription or one‑time) + webhooks.</li>
+              <li>Automatic access grant/revoke on payment status.</li>
+              <li>Invoices/receipts + dunning (failed payment) handling.</li>
+              <li><strong style="color:#fff">Payment methods:</strong> Apple Pay, Google Pay, Link, debit/credit cards.</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="pill" style="margin:6px 0 10px">Testing & QA</h3>
+            <ul class="list muted">
+              <li>Cross‑browser/device checks (Chrome, Safari, iOS, Android).</li>
+              <li>Payment flow tests (test & live modes).</li>
+              <li>Enrollment and lesson access verification.</li>
+              <li>Performance passes (LCP/CLS), accessibility basics.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Stack -->
+    <section class="card section reveal" aria-labelledby="stack-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="stack-title" class="t-blue">03 · Technical Stack</h2>
+        <ul class="list muted">
+          <li><strong style="color:#fff">Frontend:</strong> Framer (responsive components, forms, SEO).</li>
+          <li><strong style="color:#fff">LMS:</strong> WordPress + (LearnDash or TutorLMS) + membership plugin if needed.</li>
+          <li><strong style="color:#fff">Payments:</strong> Stripe (Checkout/Customer Portal) + WP Stripe plugin + webhooks.</li>
+          <li><strong style="color:#fff">Hosting:</strong> Secure WP hosting (SSL, backups, caching/CDN).</li>
+          <li><strong style="color:#fff">Automation (optional):</strong> Email sequences for new students.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4-Week Timeline -->
+    <section class="card section reveal" aria-labelledby="timeline-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="timeline-title" class="t-violet">04 · Timeline (4 Weeks)</h2>
+        <p class="muted" style="margin-top:8px">28 days total. Working days exclude weekends/public holidays.</p>
+        <div class="grid-days">
+          <!-- Week 1 -->
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 1 — Foundations</div>
+            <h3>Days 1–3: Discovery & UX</h3>
+            <ul>
+              <li>Kickoff with Miss Badria Mattar; confirm goals & requirements.</li>
+              <li>Information architecture & wireframes (Framer).</li>
+              <li>Choose LMS (LearnDash/TutorLMS) & membership model.</li>
+            </ul>
+          </div>
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 1</div>
+            <h3>Days 4–5: Setup</h3>
+            <ul>
+              <li>Provision WordPress; install LMS & essential plugins.</li>
+              <li>Course taxonomy (course → module → lesson).</li>
+              <li>Prepare Stripe account, products, and prices.</li>
+            </ul>
+          </div>
+
+          <!-- Week 2 -->
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 2 — Build</div>
+            <h3>Days 6–8: Framer Pages</h3>
+            <ul>
+              <li>Build Home, Courses, Pricing, About, Contact pages.</li>
+              <li>Hero, social proof, FAQs, SEO pass.</li>
+              <li>Link to LMS where appropriate.</li>
+            </ul>
+          </div>
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 2</div>
+            <h3>Days 9–10: LMS Core</h3>
+            <ul>
+              <li>Configure courses, lessons, quizzes, certificates.</li>
+              <li>Student dashboard & progress tracking.</li>
+              <li>Content protection by plan.</li>
+            </ul>
+          </div>
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 2</div>
+            <h3>Days 11–12: Content Upload</h3>
+            <ul>
+              <li>Upload initial videos, PDFs, quiz banks.</li>
+              <li>Set course prerequisites & drip (if needed).</li>
+            </ul>
+          </div>
+
+          <!-- Week 3 -->
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 3 — Payments</div>
+            <h3>Days 13–14: Stripe & Paywalls</h3>
+            <ul>
+              <li>Stripe Checkout + Customer Portal configuration.</li>
+              <li>Webhooks: payment → enroll, cancel/failed → revoke.</li>
+              <li>Test Apple Pay, Google Pay, Link, cards.</li>
+            </ul>
+          </div>
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 3 — QA</div>
+            <h3>Days 15–16: System QA</h3>
+            <ul>
+              <li>Cross‑device/browser QA (mobile‑first tweaks).</li>
+              <li>Payment & access stress testing (test & live).</li>
+              <li>Performance & accessibility pass.</li>
+            </ul>
+          </div>
+
+          <!-- Week 4 -->
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 4 — Review</div>
+            <h3>Days 17–20: Review & Revisions</h3>
+            <ul>
+              <li>Review session with Miss Badria Mattar.</li>
+              <li>Copy/visual refinements in Framer.</li>
+              <li>LMS content tidy‑up & structure polish.</li>
+            </ul>
+          </div>
+          <div class="day"><div class="bg-soft" aria-hidden="true"></div>
+            <div class="kicker">Week 4 — Launch</div>
+            <h3>Days 21–28: Launch & Handover</h3>
+            <ul>
+              <li>Go‑live checklist (DNS/SSL/backups).</li>
+              <li>Admin handover & quick‑start guide.</li>
+              <li>Post‑launch watch window (bug fixes).</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted-2" style="margin-top:10px">Notes: If approvals or access are delayed, the sequence remains the same; dates shift accordingly.</p>
+      </div>
+    </section>
+
+    <!-- Access & Integrations -->
+    <section class="card section reveal" aria-labelledby="access-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="access-title" class="t-blue">05 · Access & Integrations</h2>
+        <ul class="list muted">
+          <li>Framer project access for Targetime team (edit/publish).</li>
+          <li>WordPress admin user for LMS configuration.</li>
+          <li>Stripe Dashboard + API keys (restricted where possible).</li>
+          <li>Domain/DNS access for SSL + Framer/WordPress mapping.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Data & Hosting -->
+    <section class="card section reveal" aria-labelledby="data-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="data-title" class="t-emerald">06 · Data & Hosting</h2>
+        <ul class="list muted">
+          <li>Information will be stored on a secure server that Targetime manages.</li>
+          <li>If you prefer full ownership/control, you may procure your own server/hosting; we will deploy to your environment.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Revisions & Timeline Policy -->
+    <section class="card section reveal" aria-labelledby="revisions-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="revisions-title" class="t-cyan">07 · Revisions & Timeline Policy</h2>
+        <ul class="list muted">
+          <li>Included: <strong style="color:#fff">3 revisions</strong>.</li>
+          <li>Each <strong style="color:#fff">complete revision</strong> triggers <strong style="color:#fff">+1 week</strong> added to the project timeline.</li>
+          <li><strong style="color:#fff">Minor changes</strong> within the same approved design add <strong style="color:#fff">+2 working days</strong> to the timeline.</li>
+          <li>If the project <strong style="color:#fff">exceeds the timeline from Targetime’s side</strong>, we will offer the <strong style="color:#fff">next month’s maintenance for free</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLA -->
+    <section class="card section reveal" aria-labelledby="sla-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="sla-title" class="t-blue">08 · Service Level Agreements (SLAs)</h2>
+        <ul class="list muted">
+          <li>SLAs come into effect <strong style="color:#fff">after website development is complete</strong>.</li>
+          <li><strong style="color:#fff">Response time:</strong> 24–48 hours.</li>
+          <li><strong style="color:#fff">Implementation time:</strong> typically 4–7 working days, depending on task complexity.</li>
+          <li><strong style="color:#fff">Very minor changes:</strong> typically within 24 hours.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Roles -->
+    <section class="card section reveal" aria-labelledby="roles-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="roles-title" class="t-cyan">09 · Roles & Responsibilities</h2>
+        <ul class="list muted">
+          <li><strong style="color:#fff">Targetime:</strong> Framer build, LMS configuration, Stripe/paywall setup, testing, launch, secure server management (if applicable).</li>
+          <li><strong style="color:#fff">Miss Badria Mattar:</strong> Content delivery/approvals, Stripe account ownership, policy documents, optional hosting/server ownership.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Risks & Assumptions -->
+    <section class="card section reveal" aria-labelledby="risks-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="risks-title" class="t-blue">10 · Risks & Assumptions</h2>
+        <ul class="list muted">
+          <li>Delays in content or approvals may shift dates (sequence remains the same).</li>
+          <li>Payment/legal policies are provided by client; we implement on site.</li>
+          <li>Hosting performance affects video delivery; we recommend CDN for media.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Handover & Support -->
+    <section class="card section reveal" aria-labelledby="handover-title">
+      <div class="soft-highlight" aria-hidden="true"></div>
+      <div style="position:relative; z-index:1">
+        <h2 id="handover-title" class="t-amber">11 · Handover, Training & Support</h2>
+        <ul class="list muted">
+          <li>Admin handover (Framer + WordPress).</li>
+          <li>Quick‑start PDF: create course, add lesson, set price, publish.</li>
+          <li>Post‑launch support window for critical fixes.</li>
+        </ul>
+        <p class="muted-2" style="margin-top:8px">Send any materials or feedback to <strong style="color:#fff">info@targetime.com</strong>.</p>
+      </div>
+    </section>
+
+    <div class="footer">© <span id="yr"></span> Targetime. All rights reserved.</div>
+  </main>
+
+  <script>
+    (function(){
+      const els=[...document.querySelectorAll('.reveal')];
+      const reveal=(el)=>el.classList.add('show');
+      const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting) reveal(e.target);});},{threshold:.15});
+      els.forEach(el=>io.observe(el));
+      document.getElementById('yr').textContent=new Date().getFullYear();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { els.forEach(reveal); }
+    })();
+  </script>
+</body>
+</html>
